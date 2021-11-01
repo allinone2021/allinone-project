@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.freeBoard.mapper.FreeBoardMapper">
+
+
+    <sql id="search">
+        <if test="type != null">
+            <foreach collection="arr" item="item" separator=" OR " open="WHERE (" close=")">
+                <if test="item == 'T'.toString()">
+                    title like concat('%',#{keyword},'%')
+                </if>
+                <if test="item == 'C'.toString()">
+                    content like concat('%',#{keyword},'%')
+                </if>
+                <if test="item == 'W'.toString()">
+                    writer like concat('%', #{keyword}, '%')
+                </if>
+            </foreach>
+        </if>
+    </sql>
+
+
+    <insert id="insert">
+        insert into tbl_freeBoard (title, writer, content)
+        values (#{title}, #{writer}, #{content})
+        <selectKey order="AFTER" resultType="long" keyProperty="fbno">
+            select last_insert_id()
+        </selectKey>
+    </insert>
+
+<!--db니깐 vo값 > vo 위치-->
+    <select id="getList" resultType="org.allinone.freeBoard.domain.FreeBoard">
+        select * from tbl_freeBoard
+        <include refid="search"></include>
+       order by fbno desc limit #{skip}, #{size}
+    </select>
+
+
+
+
+
+
+
+
+
+    <resultMap id="freeBoardMap" type="org.allinone.freeBoard.domain.FreeBoard">
+        <id property="fbno" column="fbno"></id>
+        <result property="title" column="title"></result>
+        <result property="writer" column="writer"></result>
+        <result property="content" column="content"></result>
+        <result property="regDate" column="regDate"></result>
+        <result property="modDate" column="modDate"></result>
+        <result property="viewCount" column="viewCount"></result>
+        <result property="replyCnt" column="replyCnt"></result>
+
+        <collection property="attachList" resultMap="attachMap"></collection>
+    </resultMap>
+
+    <resultMap id="attachMap" type="org.allinone.freeBoard.domain.FreeBoardAttach">
+        <result property="uuid" column="uuid"></result>
+
+        <result property="fbno" column="fbno"></result>
+        <result property="path" column="path"></result>
+        <result property="fileName" column="fileName"></result>
+        <result property="image" column="image"></result>
+    </resultMap>
+
+    <select id="select" resultMap="freeBoardMap">
+        select *
+        from
+            tbl_freeboard freeboard left join tbl_attach ta on freeboard.fbno = ta.fbno
+        where freeboard.fbno = #{fbno}
+    </select>
+
+    <delete id="deleteAttach">
+        delete from tbl_attach where fbno = #{fbno}
+    </delete>
+
+    <delete id="delete">
+        delete from tbl_freeBoard where fbno = #{fbno}
+    </delete>
+    <update id="update">
+        update tbl_freeBoard set title = #{title}, content = #{content}
+        where fbno = #{fbno}
+    </update>
+
+    <update id="updateReplyCnt">
+        update tbl_freeBoard set replyCnt = replyCnt + #{num} where fbno = #{fbno}
+    </update>
+
+    <select id="getCount" resultType="int">
+        select count(fbno) from tbl_freeBoard
+        <include refid="search"></include>
+    </select>
+
+    <select id="prevNum" resultType="Long">
+        select * from tbl_freeBoard where fbno  IN( select max(fbno) from tbl_freeBoard where #{fbno} > fbno)
+    </select>
+
+    <select id="nextNum" resultType="Long">
+        select * from tbl_freeBoard where fbno  IN( select min(fbno) from tbl_freeBoard where fbno > #{fbno} )
+    </select>
+
+    <insert id="insertAttach">
+        insert into tbl_attach (uuid, fbno, fileName, path, image)
+        values (#{uuid}, #{fbno}, #{fileName}, #{path}, #{image})
+    </insert>
+
+</mapper>

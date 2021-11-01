@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.storeinfo.mapper.ManageMapper">
+
+    <select id="getCities" resultType="string">
+        select distinct(city) from tbl_region
+    </select>
+
+    <select id="getCounties" resultType="string">
+        select county from tbl_region where city = #{city} and cityCode > 0
+    </select>
+
+    <select id="getCityCode" resultType="int">
+        select cityCode from tbl_region where city = #{city} and county = #{county} and cityCode > 0;
+    </select>
+
+
+</mapper>

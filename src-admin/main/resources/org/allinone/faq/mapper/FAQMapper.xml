@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.faq.mapper.FAQMapper">
+
+
+    <sql id="search">
+        <if test="type != null">
+            <foreach collection="arr" item="item" separator=" OR " open="WHERE (" close=")">
+                <if test="item == 'T'.toString()">
+                    title like concat('%',#{keyword},'%')
+                </if>
+                <if test="item == 'C'.toString()">
+                    content like concat('%',#{keyword},'%')
+                </if>
+            </foreach>
+        </if>
+    </sql>
+
+    <insert id="insertFAQ">
+        insert into tbl_faq(  title , content,category )
+        VALUES ( #{title} , #{content} ,#{category} )
+        <selectKey order="AFTER" resultType="long" keyProperty="fno">
+            select last_insert_id()
+        </selectKey>
+    </insert>
+
+    <select id="getList" resultType="org.allinone.faq.domain.FAQ">
+        select * from tbl_faq
+        <include refid="search"></include>
+        order by fno desc limit #{skip}, #{size}
+    </select>
+
+    <delete id="remove">
+        delete from tbl_faq where fno = #{fno}
+    </delete>
+
+    <update id="update">
+        update tbl_faq   set title = #{title}, content = #{content}  where fno = #{fno}
+    </update>
+
+    <select id="getCount" resultType="int">
+        select count(fno) from tbl_faq
+        <include refid="search"></include>
+    </select>
+
+
+    <select id="prevNum" resultType="Long">
+        select *
+        from tbl_faq
+        where fno IN (select max(fno) from tbl_faq where #{fno} > fno ) and level = 0
+    </select>
+
+    <select id="nextNum" resultType="Long">
+        select * from tbl_faq where fno IN (select min(fno) from tbl_faq where fno > #{fno}) and level = 0
+    </select>
+
+
+   
+
+ 
+</mapper>

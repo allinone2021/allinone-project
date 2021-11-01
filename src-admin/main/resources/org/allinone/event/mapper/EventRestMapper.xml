@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.event.mapper.EventRestMapper">
+
+    <select id="list" resultType="org.allinone.event.domain.Event">
+        select *
+        from tbl_event
+        where evtShop = #{evtShop}
+        and evtCheck = #{evtCheck}
+        order by eno
+        desc
+    </select>
+
+</mapper>

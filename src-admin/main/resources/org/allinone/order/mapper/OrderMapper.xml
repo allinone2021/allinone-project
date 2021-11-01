@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.order.mapper.OrderMapper">
+
+    <select id="allPrice" resultType="Long">
+        select sum(totalPrice) total
+        from tbl_order orders
+        left join tbl_orderMenu orderMenu
+        on orders.orderNum = orderMenu.orderNum
+        where orders.orderNum = #{orderNum}
+        and orders.shop = #{shop}
+        group by orders.orderNum
+    </select>
+
+    <sql id="search">
+        <if test="starting != null">
+            and date(orderDate) between date(#{starting}) and date(#{ending})
+        </if>
+    </sql>
+
+    <select id="select" resultMap="order">
+        select *
+        from tbl_order orders
+        left join tbl_orderMenu orderMenu
+        on orders.orderNum = orderMenu.orderNum
+        where orders.orderNum = #{orderNum}
+        and orders.shop = #{shop}
+    </select>
+
+    <resultMap id="order" type="org.allinone.order.domain.Order">
+        <id property="orderNum" column="orderNum"/>
+        <result property="id" column="id"/>
+        <result property="nickName" column="nickName"/>
+        <result property="phone" column="phone"/>
+        <result property="shop" column="shop"/>
+        <result property="comment" column="comment"/>
+        <result property="orderDate" column="orderDate"/>
+        <result property="orderCheck" column="orderCheck"/>
+        <result property="orderConfirm" column="orderConfirm"/>
+        <result property="pickupTime" column="pickupTime"/>
+        <collection property="orderMenuList" resultMap="menuMap"/>
+    </resultMap>
+
+    <resultMap id="menuMap" type="org.allinone.order.domain.OrderMenu">
+        <result property="orderNum" column="orderNum"/>
+        <result property="menu" column="menu"/>
+        <result property="amount" column="amount"/>
+        <result property="price" column="price"/>
+        <result property="totalPrice" column="totalPrice"/>
+    </resultMap>
+
+    <update id="update">
+        update tbl_order set orderCheck = 0 where orderNum = #{orderNum}
+    </update>
+
+    <delete id="delete">
+        delete from tbl_order where orderNum = #{orderNum}
+    </delete>
+
+    <select id="getList" resultType="org.allinone.order.domain.Order">
+        select *
+        from tbl_order
+        where shop = #{shop}
+        <include refid="search"></include>
+        order by orderNum
+        desc limit #{skip}, #{size}
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(orderNum) from tbl_order where shop = #{shop}
+        <include refid="search"></include>
+    </select>
+</mapper>

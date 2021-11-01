@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.member.mapper.ReportMapper">
+
+    <sql id="search">
+        <trim prefix="where" prefixOverrides="and">
+            <if test="filterArr != null">
+                and category in
+                <foreach collection="filterArr" item="status" open="(" close=")" separator=",">
+                    #{status}
+                </foreach>
+            </if>
+            <if test="type != null">
+                <foreach collection="arr" item="item" separator=" OR " open="and (" close=")">
+                    <if test="item == 'I'.toString()">
+                        rid like concat('%',#{keyword},'%')
+                    </if>
+                    <if test="item == 'R'.toString()">
+                        reporter like concat('%',#{keyword},'%')
+                    </if>
+                </foreach>
+            </if>
+        </trim>
+    </sql>
+
+    <insert id="insert">
+        insert into tbl_report (rid, reporter, category, reason)
+        values (#{rid}, #{reporter}, #{category}, #{reason})
+    </insert>
+
+    <select id="getList" resultType="org.allinone.member.domain.Report">
+        select * from tbl_report
+        <include refid="search"></include>
+        order by rno desc limit #{skip}, #{size}
+    </select>
+
+    <select id="getDetailList" resultType="org.allinone.member.domain.Report">
+        select * from tbl_report where
+
+        <if test="detailtype == 'rid'.toString()">
+            rid=#{reportDTO.rid}
+        </if>
+        <if test="detailtype == 'reporter'.toString()">
+            reporter=#{reportDTO.reporter}
+        </if>
+
+        order by rno desc
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(rno) from tbl_report
+        <include refid="search"></include>
+    </select>
+
+    <update id="cancel">
+        update tbl_report set cancel=1 where rno =#{rno}
+    </update>
+
+    <select id="categoryCount" resultType="org.allinone.member.dto.ReportCategoryDTO">
+        select category, count(rno) count from tbl_report where
+
+        <if test="detailtype == 'rid'.toString()">
+            rid=#{reportDTO.rid} and cancel not in (1)
+        </if>
+        <if test="detailtype == 'reporter'.toString()">
+            reporter=#{reportDTO.reporter} and cancel not in (1)
+        </if>
+
+        group by category
+    </select>
+
+    <update id="signout">
+
+        update
+
+        <if test="detailtype == 'rid'.toString()">
+            tbl_member set status = 4 where mid=#{reportDTO.rid}
+        </if>
+        <if test="detailtype == 'reporter'.toString()">
+            <choose>
+                <when test="reportDTO.category == '가게'.toString()">
+                    tbl_store set status = 5 where sid=#{reportDTO.reporter}
+                </when>
+                <otherwise>
+                    tbl_member set status = 4 where mid=#{reportDTO.reporter}
+                </otherwise>
+            </choose>
+        </if>
+    </update>
+
+    <update id="status">
+        update tbl_member set status=2 where mid = #{rid}
+                                         and exists (select count(rno) from tbl_report where rid= #{rid}  group by rid having count(rno) >5)
+    </update>
+</mapper>

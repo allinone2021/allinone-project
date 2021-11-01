@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.event.mapper.EventMapper">
+
+    <select id="read" resultMap="eventMap">
+        select *
+        from
+            tbl_event event left join tbl_evtAttach attach on event.eno = attach.eno
+        where event.eno = #{eno} and event.evtShop = #{shop}
+    </select>
+
+    <resultMap id="eventMap" type="org.allinone.event.domain.Event">
+        <id property="eno" column="eno"></id>
+        <result property="evtTitle" column="evtTitle"></result>
+        <result property="evtShop" column="evtShop"></result>
+        <result property="evtContents" column="evtContents"></result>
+        <result property="startDate" column="startDate"></result>
+        <result property="endDate" column="endDate"></result>
+        <result property="evtMenu" column="evtMenu"></result>
+        <result property="evtAmount" column="evtAmount"></result>
+        <result property="evtCount" column="evtCount"></result>
+        <result property="evtPrice" column="evtPrice"></result>
+        <result property="evtCheck" column="evtCheck"></result>
+        <collection property="evtAttachList" resultMap="evtAttachMap"></collection>
+    </resultMap>
+
+    <resultMap id="evtAttachMap" type="org.allinone.event.domain.EvtAttach">
+        <result property="uuid" column="uuid"></result>
+        <result property="eno" column="eno"></result>
+        <result property="path" column="path"></result>
+        <result property="fileName" column="fileName"></result>
+        <result property="image" column="image"></result>
+    </resultMap>
+
+    <delete id="delete">
+        delete from tbl_event where eno = #{eno}
+    </delete>
+
+    <update id="updateCheck">
+        update tbl_event
+        set evtCheck = 0
+        where eno = #{eno}
+    </update>
+    
+    <insert id="insert">
+        insert into tbl_event (evtTitle, evtShop, evtContents, startDate, endDate, evtMenu, evtAmount, evtPrice)
+        values (#{evtTitle}, #{evtShop}, #{evtContents}, #{startDate}, #{endDate}, #{evtMenu}, #{evtAmount}, #{evtPrice})
+        <selectKey order="AFTER" resultType="long" keyProperty="eno">
+            select last_insert_id()
+        </selectKey>
+    </insert>
+
+    <select id="evtList" resultType="org.allinone.event.domain.Event">
+        select *
+        from tbl_event
+        where evtShop = #{Shop}
+        and evtCheck = 1
+        order by eno
+        desc
+    </select>
+
+    <select id="endEvtList" resultType="org.allinone.event.domain.Event">
+        select *
+        from tbl_event
+        where evtShop = #{Shop}
+        and evtCheck = 0
+        order by eno
+        desc
+    </select>
+
+    <insert id="insertAttach">
+        insert into tbl_evtAttach (uuid, eno, fileName, path, image)
+        values (#{uuid}, #{eno}, #{fileName}, #{path}, #{image})
+    </insert>
+
+</mapper>

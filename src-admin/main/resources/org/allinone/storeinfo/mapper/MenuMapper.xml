@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.storeinfo.mapper.MenuMapper">
+
+    <insert id="insertMenu">
+        insert into tbl_menus (sno, menuName, menuPrice, menuDesc, path, fileName, uuid)
+        values (#{sno}, #{menuName}, #{menuPrice}, #{menuDesc}, #{path}, #{fileName}, #{uuid})
+    </insert>
+
+    <select id="getListWithStore"  resultType="org.allinone.storeinfo.domain.Menu">
+        select * from tbl_menus where sno = #{sno} order by soldout, mno
+    </select>
+
+    <update id="updateMenu">
+        update tbl_menus
+        set menuName = #{menuName}, menuPrice = #{menuPrice}, menuDesc = #{menuDesc}, path = #{path}, fileName = #{fileName}, uuid = #{uuid}
+        where mno = #{mno}
+    </update>
+
+    <delete id="deleteMenu">
+        delete from tbl_menus where mno = #{mno}
+    </delete>
+
+    <update id="soldOutMenu">
+        update tbl_menus set soldOut = #{soldOut} where mno = #{mno};
+    </update>
+
+
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.notice.mapper.ReplyMapper">
+    <insert id="insert">
+        insert into tbl_reply (nno, replyer, reply)
+        values (#{nno}, #{replyer}, #{reply})
+    </insert>
+    <select id="getListWithNotice" resultType="org.allinone.notice.domain.Reply">
+        select * from tbl_reply where nno = #{nno} order by rno asc limit #{pageRequestDTO.skip}, #{pageRequestDTO.size}
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(rno) from tbl_reply  where nno = #{nno}
+    </select>
+
+    <select id="read" resultType="org.allinone.notice.domain.Reply">
+        select * from tbl_reply  where rno = #{rno}
+    </select>
+
+    <delete id="delete">
+        delete from tbl_reply where rno = #{rno}
+    </delete>
+    <update id="update">
+        update tbl_reply set reply = #{reply}, modDate = now() where rno = #{rno}
+    </update>
+
+
+</mapper>

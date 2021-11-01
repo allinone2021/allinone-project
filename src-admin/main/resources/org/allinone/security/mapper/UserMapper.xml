@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.security.mapper.UserMapper">
+    <!-- 회원 한 명이 여러 개의 권한 가질 수 있음 => resultMap 사용 -->
+    <resultMap id="memberMap" type="org.allinone.security.domain.MemberUser">
+        <id property="mid" column="mid"></id>
+        <result property="mpw" column="mpw"></result>
+        <result property="mname" column="mname"></result>
+        <result property="enabled" column="enabled"></result>
+        <collection property="roleList" resultMap="memberRoleMap"></collection>
+    </resultMap>
+
+    <resultMap id="memberRoleMap" type="org.allinone.security.domain.MemberRole">
+        <result property="mid" column="mid"></result>
+        <result property="role" column="role"></result>
+    </resultMap>
+
+    <select id="findByMid" resultMap="memberMap">
+        select m.mid, mpw, mname, enabled, tmr.mid, tmr.role
+        from tbl_member m inner join tbl_member_role tmr on m.mid = tmr.mid
+        where m.mid = #{mid}
+    </select>
+
+
+
+    <resultMap id="storeMap" type="org.allinone.security.domain.StoreUser">
+        <id property="sid" column="sid"></id>
+        <result property="spw" column="spw"></result>
+        <result property="sname" column="sname"></result>
+        <result property="enabled" column="enabled"></result>
+        <collection property="roleList" resultMap="storeRoleMap"></collection>
+    </resultMap>
+
+    <resultMap id="storeRoleMap" type="org.allinone.security.domain.StoreRole">
+        <result property="sid" column="sid"></result>
+        <result property="role" column="role"></result>
+    </resultMap>
+
+    <select id="findBySid" resultMap="storeMap">
+        select s.sid, spw, sname, enabled, tsr.sid, tsr.role
+        from tbl_store s inner join tbl_store_role tsr on s.sid = tsr.sid
+        where s.sid = #{sid}
+    </select>
+
+</mapper>

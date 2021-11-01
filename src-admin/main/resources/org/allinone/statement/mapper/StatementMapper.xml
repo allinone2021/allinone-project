@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.statement.mapper.StatementMapper">
+
+    <insert id="insert">
+        insert into tbl_order (memberID, oshop, smenu, omenuprice)
+        values (#{memberID}, #{oshop}, #{smenu}, #{omenuprice})
+    </insert>
+
+    <select id="getList" resultType="org.allinone.statement.domain.Statement">
+        select orders.orderNum, orderDate, shop, totalPrice
+        from tbl_order orders
+                 left join tbl_ordermenu menu
+                           on orders.orderNum = menu.orderNum
+        where date (orderDate) = #{today} and shop = #{shopName}
+        order by orderDate desc limit #{skip},#{size}
+    </select>
+
+    <select id="getDailyList" resultType="org.allinone.statement.domain.Statement">
+        select date(orderDate) date, shop, sum(totalPrice) totalSales
+        from (select orders.orderNum, orderDate, shop, totalPrice, month(orderDate) month, year(orderDate) year from tbl_order orders
+            left join tbl_ordermenu menu
+            on orders.orderNum = menu.orderNum
+            where shop = #{shopName}) t
+        where year = #{year} and month = #{month}
+        Group by date
+        order by date desc
+    </select>
+
+    <select id="getMonthlyList" resultType="org.allinone.statement.domain.Statement">
+        select year, month, shop, sum(totalPrice) totalSales
+        from (select orders.orderNum, orderDate, shop, totalPrice, month(orderDate) month, year(orderDate) year from tbl_order orders
+            left join tbl_ordermenu menu
+            on orders.orderNum = menu.orderNum
+            where shop = #{shopName}) t
+        where year = #{year}
+        Group By month
+        order by month desc
+    </select>
+
+    <select id="getYearList" resultType="org.allinone.statement.domain.Statement">
+        select year, shop, sum(totalPrice) totalSales
+        from (select orders.orderNum, orderDate, shop, totalPrice, month(orderDate) month, year(orderDate) year from tbl_order orders
+            left join tbl_ordermenu menu
+            on orders.orderNum = menu.orderNum
+            where shop = #{shopName}) t
+        Group By year
+        order by year desc
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(orderNum) from (select orders.orderNum, orderDate, shop, totalPrice from tbl_order orders
+             left join tbl_ordermenu menu
+             on orders.orderNum = menu.orderNum
+             where date(orderDate) = #{today} and shop = #{shopName}
+        order by orderDate) t
+    </select>
+
+
+
+</mapper>

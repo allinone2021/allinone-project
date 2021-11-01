@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.storeinfo.mapper.ReviewMapper">
+    <insert id="insertReview">
+        insert into tbl_review (sno, writer, content)
+        values (#{sno}, #{writer}, #{content})
+    </insert>
+
+    <select id="reviewList" resultType="org.allinone.storeinfo.domain.Review">
+        select r.*,
+               (select count(*) from tbl_review where sno = #{sno}) as totalCnt,
+               (select count(*) count from tbl_review where DATE_FORMAT(regdate, '%Y%m%d') = curdate() and sno = #{sno}) as todayCnt
+        from tbl_review r where sno = #{sno} order by rno
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(sno) from tbl_review where sno = #{sno}
+    </select>
+
+
+</mapper>

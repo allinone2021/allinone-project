@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.order.mapper.OrderRestMapper">
+
+    <delete id="delete">
+        delete from tbl_order where orderNum = #{orderNum}
+    </delete>
+
+    <update id="update">
+        update tbl_order set orderConfirm = 0 where orderNum = #{orderNum}
+    </update>
+
+    <select id="allList" resultType="org.allinone.order.domain.Order">
+        select *
+        from tbl_order
+        where shop = #{shop}
+        order by orderNum
+        desc
+    </select>
+
+    <select id="specificList" resultType="org.allinone.order.domain.Order">
+        select *
+        from tbl_order
+        where shop = #{shop}
+        and date(orderDate) between date(#{starting}) and date(#{ending})
+        order by orderNum
+        desc
+    </select>
+
+    <select id="customList" resultType="org.allinone.order.domain.Order">
+        select *
+        from tbl_order
+        where shop = #{shop}
+        and orderCheck = #{orderCheck}
+        and date(orderDate) = date(now())
+        order by orderNum
+        desc limit #{limitNum}
+    </select>
+
+
+</mapper>

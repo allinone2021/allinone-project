@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.notice.mapper.NoticeMapper">
+
+    <sql id="search">
+        <if test="type != null">
+            <foreach collection="arr" item="item" separator=" OR " open="WHERE (" close=")">
+                <if test="item == 'T'.toString()">
+                    title like concat('%',#{keyword},'%')
+                </if>
+                <if test="item == 'C'.toString()">
+                    content like concat('%',#{keyword},'%')
+                </if>
+            </foreach>
+        </if>
+    </sql>
+
+
+    <insert id="insert">
+        insert into tbl_notice (title, content)
+        values (#{title}, #{content})
+        <selectKey order="AFTER" resultType="long" keyProperty="nno">
+            select last_insert_id()
+        </selectKey>
+    </insert>
+
+    <!--db니깐 vo값 > vo 위치-->
+    <select id="getList" resultType="org.allinone.notice.domain.Notice">
+        select * from tbl_notice
+        <include refid="search"></include>
+        order by nno desc limit #{skip}, #{size}
+    </select>
+
+
+    <select id="select" resultMap="NoticeMap">
+        select *
+        from tbl_notice notice left join tbl_csattach ta on notice.nno = ta.nno
+        where notice.nno = #{nno}
+    </select>
+
+    <delete id="delete">
+        delete
+        from tbl_notice
+        where nno = #{nno}
+    </delete>
+    <update id="update">
+        update tbl_notice
+        set title   = #{title},
+            content = #{content}
+        where nno = #{nno}
+    </update>
+
+    <update id="viewCount" >
+        UPDATE  tbl_notice  set viewCount = viewCount + 1  where nno = #{nno}
+    </update>
+
+    <select id="getCount" resultType="int">
+        select count(nno) from tbl_notice
+        <include refid="search"></include>
+    </select>
+
+    <select id="prevNum" resultType="Long">
+        select *
+        from tbl_notice
+        where nno IN (select max(nno) from tbl_notice where #{nno} > nno)
+    </select>
+
+    <select id="nextNum" resultType="Long">
+        select *
+        from tbl_notice
+        where nno IN (select min(nno) from tbl_notice where nno > #{nno})
+    </select>
+
+
+    <resultMap id="NoticeMap" type="org.allinone.notice.domain.Notice">
+        <id property="nno" column="nno"></id>
+        <result property="title" column="title"></result>
+        <result property="content" column="content"></result>
+        <result property="replyCnt" column="replyCnt"></result>
+        <result property="regDate" column="regDate"></result>
+        <collection property="attachList" resultMap="attachMap"></collection>
+    </resultMap>
+
+    <resultMap id="attachMap" type="org.allinone.notice.domain.NoticeAttach">
+        <result property="uuid" column="uuid"></result>
+        <result property="nno" column="nno"></result>
+        <result property="path" column="path"></result>
+        <result property="fileName" column="fileName"></result>
+        <result property="image" column="image"></result>
+    </resultMap>
+
+
+    <update id="updateReplyCnt">
+        update tbl_notice set replyCnt = replyCnt + #{num} where nno = #{nno}
+    </update>
+    <insert id="insertAttach">
+        insert into tbl_csattach (uuid, nno, fileName, path, image)
+        values (#{uuid}, #{nno}, #{fileName}, #{path}, #{image})
+    </insert>
+
+    <delete id="deleteAttach">
+        delete from tbl_csattach where nno = #{nno}
+    </delete>
+</mapper>

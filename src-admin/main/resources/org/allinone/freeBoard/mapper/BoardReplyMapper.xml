@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.freeBoard.mapper.BoardReplyMapper">
+
+    <select id="getReplyOfFreeBoard" resultType="org.allinone.freeBoard.domain.BoardReply">
+        select * from tbl_boardreply where fbno = #{fbno} order by rno desc
+    </select>
+
+    <select id="read" resultType="org.allinone.freeBoard.domain.BoardReply">
+        select * from tbl_boardreply where rno = #{rno}
+    </select>
+
+    <insert id="insert">
+        insert into tbl_boardreply (fbno, replyer, reply)
+        values (#{fbno}, #{replyer}, #{reply})
+    </insert>
+
+    <delete id="delete">
+        delete from tbl_boardreply where rno = #{rno}
+    </delete>
+
+    <update id="update">
+        update tbl_boardreply set reply = #{reply}, modDate = now() where rno = #{rno}
+    </update>
+
+</mapper>

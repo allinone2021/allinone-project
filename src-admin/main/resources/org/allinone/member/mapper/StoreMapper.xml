@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.member.mapper.StoreMapper">
+
+    <sql id="search">
+        <trim prefix="where" prefixOverrides="and">
+            <if test="filterArr != null">
+                and status in
+                <foreach collection="filterArr" item="status" open="(" close=")" separator=",">
+                    #{status}
+                </foreach>
+            </if>
+            <if test="type != null">
+                <foreach collection="arr" item="item" separator=" OR " open="and (" close=")">
+                    <if test="item == 'I'.toString()">
+                        sid like concat('%',#{keyword},'%')
+                    </if>
+                    <if test="item == 'S'.toString()">
+                        sname like concat('%',#{keyword},'%')
+                    </if>
+                    <if test="item == 'N'.toString()">
+                        regnum like concat('%', #{keyword}, '%')
+                    </if>
+                </foreach>
+            </if>
+        </trim>
+    </sql>
+
+    <!-- 가게 회원 가입 -->
+    <insert id="joinStore">
+        insert into tbl_store (sname, regnum, sid, spw)
+        values (#{sname}, #{regnum}, #{sid}, #{spw})
+
+        <selectKey order="AFTER" resultType="long" keyProperty="sno">
+            select last_insert_id()
+        </selectKey>
+
+    </insert>
+
+    <insert id="insertRole">
+        insert into tbl_store_role values (#{sid},'ROLE_MEMBER')
+    </insert>
+
+    <!-- 가입한 가게 목록 -->
+    <select id="getList" resultType="org.allinone.member.domain.Store">
+        select * from tbl_store
+        <include refid="search"></include>
+        order by sno desc limit #{skip}, #{size}
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(sno) from tbl_store
+        <include refid="search"></include>
+    </select>
+
+
+    <resultMap id="storeMap" type="org.allinone.member.domain.Store">
+        <id property="sno" column="sno"></id>
+        <result property="sname" column="sname"></result>
+        <result property="regnum" column="regnum"></result>
+        <result property="sid" column="sid"></result>
+        <result property="spw" column="spw"></result>
+        <result property="regdate" column="regdate"></result>
+        <result property="status" column="status"></result>
+
+        <collection property="attachList" resultMap="attachMap"></collection>
+    </resultMap>
+
+    <resultMap id="attachMap" type="org.allinone.member.domain.StoreAttach">
+        <result property="uuid" column="uuid"></result>
+        <result property="sno" column="sno"></result>
+        <result property="path" column="path"></result>
+        <result property="fileName" column="fileName"></result>
+        <result property="image" column="image"></result>
+    </resultMap>
+
+    <select id="select" resultMap="storeMap">
+        select * from tbl_store store
+                          left join tbl_storeattach ta on store.sno = ta.sno
+        where store.sno = #{sno}
+    </select>
+
+
+    <!-- 가게 정보 insert -->
+    <insert id="insertInfo">
+        insert into tbl_storeinfo (sno, sname) values (#{sno}, #{sname})
+    </insert>
+
+    <!-- 가게 정보 select -->
+    <select id="selectInfo" resultMap="infoMap">
+        select si.*, c.*, r.* from tbl_storeinfo si
+                                       left join tbl_category c on c.catCode = si.category
+                                       left join tbl_region r on r.cityCode = si.region
+        where sno = #{sno}
+    </select>
+
+    <resultMap id="infoMap" type="org.allinone.storeinfo.domain.StoreInfo">
+        <result property="sno" column="sno"></result>
+        <result property="sname" column="sname"></result>
+        <result property="sTel" column="sTel"></result>
+        <result property="sIntro" column="sIntro"></result>
+        <result property="email" column="email"></result>
+        <result property="address" column="address"></result>
+        <result property="sOff" column="sOff"></result>
+        <result property="sOffDay" column="sOffDay"></result>
+        <result property="sOpen" column="sOpen"></result>
+        <result property="sClose" column="sClose"></result>
+        <result property="open" column="open"></result>
+        <result property="region" column="region"></result>
+
+        <collection property="regionList" resultMap="regionMap"></collection>
+        <collection property="categoryList" resultMap="categoryMap"></collection>
+    </resultMap>
+
+    <resultMap id="regionMap" type="org.allinone.storeinfo.domain.Region">
+        <id property="cityCode" column="cityCode"></id>
+        <result property="city" column="city"></result>
+        <result property="county" column="county"></result>
+    </resultMap>
+
+    <resultMap id="categoryMap" type="org.allinone.storeinfo.domain.Category">
+        <id property="catCode" column="catCode"></id>
+        <result property="type" column="type"></result>
+        <result property="option" column="option"></result>
+    </resultMap>
+
+    <!-- 회원 상태 변경 -->
+    <update id="status">
+        update tbl_store set status = #{status} where sno = #{sno};
+    </update>
+
+    <!-- 회원이 info 변경 -->
+    <update id="updateInfo">
+        update tbl_storeinfo set
+                                 region = #{region}, category = #{category},
+                                 sTel = #{sTel}, address = #{address}, sIntro = #{sIntro}, email = #{email},
+                                 sOpen = #{sOpen}, sClose = #{sClose}, sOff = #{sOff}, sOffDay = #{sOffDay}
+        where sno = #{sno}
+    </update>
+
+    <!-- 가게 영업상태 변경 -->
+    <update id="storeOpen">
+        update tbl_storeinfo set open = #{open} where sno = #{sno}
+    </update>
+
+
+    <!-- 관리자가 회원정보 update -->
+    <update id="update">
+
+        update tbl_store set
+        <trim suffixOverrides=",">
+            <if test="sname != null">sname = #{sname},</if>
+            <if test="regnum != null">regnum  =#{regnum},</if>
+            <if test="spw != null">spw = #{spw},</if>
+        </trim>
+        where sno = #{sno}
+
+    </update>
+
+    <insert id="insertAttach">
+        insert into tbl_storeattach (uuid, sno, fileName, path, image)
+        values (#{uuid}, #{sno}, #{fileName}, #{path}, #{image})
+    </insert>
+
+    <delete id="deleteAttach">
+        delete from tbl_storeattach where sno = #{sno}
+    </delete>
+
+</mapper>

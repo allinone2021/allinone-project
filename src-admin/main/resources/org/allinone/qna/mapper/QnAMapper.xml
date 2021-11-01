@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.qna.mapper.QnAMapper">
+   
+   
+    <sql id="search">
+        <if test="type != null">
+            <foreach collection="arr" item="item" separator=" OR " open="WHERE (" close=")">
+                <if test="item == 'T'.toString()">
+                    title like concat('%',#{keyword},'%')
+                </if>
+                <if test="item == 'C'.toString()">
+                    content like concat('%',#{keyword},'%')
+                </if>
+            </foreach>
+        </if>
+    </sql>
+
+    <insert id="insertQnA">
+        insert into tbl_qna( level, writer, title , content )
+        VALUES (0, #{writer} , #{title} , #{content}  )
+        <selectKey order="AFTER" resultType="long" keyProperty="qno">
+            select last_insert_id()
+        </selectKey>
+    </insert>
+
+    <update id="pno">
+         update tbl_qna set pno = #{qno} where qno = #{qno}
+    </update>
+
+    <insert id="insertAnswer" >
+        insert into tbl_qna(pno, level, writer, title, content)
+        values (#{pno}, 1, "관리자" ,  #{title}, #{content})
+    </insert>
+
+
+    <select id="getList" resultType="org.allinone.qna.domain.QnA">
+        select * from tbl_qna
+        <include refid="search"></include>
+         order by pno desc, level asc limit #{skip}, #{size}
+    </select>
+
+    <select id="readAns" resultType="org.allinone.qna.domain.QnA">
+        select * from tbl_qna where pno = #{pno} AND level = true
+    </select>
+
+    <update id="viewCount" >
+        UPDATE  tbl_qna  set viewCount = viewCount + 1  where qno = #{qno}
+    </update>
+
+
+    <select id="select" resultMap="QnAMap">
+        select *  from tbl_qna qna left join tbl_csattach ta on qna.qno = ta.qno
+        where qna.qno = #{qno}
+    </select>
+
+<!--    ref받아서 질답 한번에 삭제하기-->
+    <delete id="delete">
+        delete from tbl_qna where pno = #{pno}
+    </delete>
+
+    <update id="update">
+        update tbl_qna   set title   = #{title}, content = #{content},modDate=now()  where qno = #{qno}
+    </update>
+
+    <select id="getCount" resultType="int">
+        select count(qno) from tbl_qna
+        <include refid="search"></include>
+    </select>
+
+    <select id="prevNum" resultType="Long">
+        select *
+        from tbl_qna
+        where pno IN (select max(pno) from tbl_qna where #{pno} > pno ) and level = 0
+    </select>
+
+    <select id="nextNum" resultType="Long">
+        select * from tbl_qna where pno IN (select min(pno) from tbl_qna where pno > #{pno}) and level = 0
+    </select>
+
+    <resultMap id="QnAMap" type="org.allinone.qna.domain.QnA">
+        <id property="qno" column="qno"></id>
+        <result property="title" column="title"></result>
+        <result property="content" column="content"></result>
+        <result property="writer" column="writer"></result>
+        <result property="level" column="level"></result>
+        <result property="pno" column="pno"></result>
+        <collection property="attachList" resultMap="attachMap"></collection>
+    </resultMap>
+    <resultMap id="attachMap" type="org.allinone.qna.domain.QnAAttach">
+        <result property="uuid" column="uuid"></result>
+        <result property="qno" column="qno"></result>
+        <result property="path" column="path"></result>
+        <result property="fileName" column="fileName"></result>
+        <result property="image" column="image"></result>
+    </resultMap>
+
+
+    <insert id="insertAttach">
+        insert into tbl_csattach (uuid, qno, fileName, path, image)
+        values (#{uuid}, #{qno}, #{fileName}, #{path}, #{image})
+    </insert>
+
+    <delete id="deleteAttach">
+        delete from tbl_csattach where qno = #{qno}
+    </delete>
+</mapper>

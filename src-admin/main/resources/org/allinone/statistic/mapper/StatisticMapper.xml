@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.statistic.mapper.StatisticMapper">
+
+    <select id="getOrderListTime" resultType="org.allinone.statistic.domain.Statistic">
+        select hour(orderDate) hour, shop, count(orderNum) orderCount
+        from (select orders.orderNum, orderDate, shop, totalPrice from tbl_order orders
+            left join tbl_ordermenu menu
+            on orders.orderNum = menu.orderNum) t
+        where date(orderDate) = #{today}
+          and shop = #{shopName}
+        group by hour
+        order by hour
+    </select>
+
+    <select id="getOrderListDay" resultType="org.allinone.statistic.domain.Statistic">
+        select date(orderDate) date, shop, count(orderNum) orderCount
+        from (select orders.orderNum, orderDate, shop, totalPrice, month(orderDate) month from tbl_order orders
+            left join tbl_ordermenu menu
+            on orders.orderNum = menu.orderNum) t
+        where shop = #{shopName}
+          and month = #{month}
+        group by date
+        order by date
+    </select>
+
+    <select id="getOrderListMonth" resultType="org.allinone.statistic.domain.Statistic">
+        select month, shop, count(orderNum) orderCount
+        from (select orders.orderNum, orderDate, shop, totalPrice, month(orderDate) month, year(orderDate) year from tbl_order orders
+            left join tbl_ordermenu menu
+            on orders.orderNum = menu.orderNum) t
+        where year = #{year}
+          and shop = #{shopName}
+        group by month
+        order by month
+    </select>
+
+    <select id="getMenuSalesStatus" resultType="org.allinone.statistic.domain.Statistic">
+        select count(menu) orderCount, menu, shop, sum(totalPrice) sales
+        from tbl_order orders
+                 left join tbl_ordermenu menu
+                           on orders.orderNum = menu.orderNum
+        where shop = #{shopName} and month(orderDate) = #{month}
+        group by menu
+    </select>
+
+    <select id="getAgeDaily" resultType="org.allinone.statistic.domain.Statistic">
+        SELECT CASE
+                   WHEN 30 > age and age >= 20 THEN '20대'
+                   WHEN 40 > age THEN '30대'
+                   WHEN 50 > age THEN '40대'
+                   WHEN 60 > age THEN '50대'
+                   WHEN 70 > age THEN '60대'
+                   WHEN 80 > age THEN '70대'
+                   WHEN age > 80 THEN '기타'
+                   END AS ageCus,
+               count(mno) customerNum
+        FROM tbl_member
+        where date (regdate) = #{today}
+        GROUP BY ageCus
+        order by ageCus
+    </select>
+
+    <select id="getAgeMonthly" resultType="org.allinone.statistic.domain.Statistic">
+        SELECT CASE
+                   WHEN 30 > age and age >= 20 THEN '20대'
+                   WHEN 40 > age THEN '30대'
+                   WHEN 50 > age THEN '40대'
+                   WHEN 60 > age THEN '50대'
+                   WHEN 70 > age THEN '60대'
+                   WHEN 80 > age THEN '70대'
+                   WHEN age > 80 THEN '기타'
+                   END AS ageCus,
+               count(mno) customerNum
+        FROM tbl_member
+        where month (regdate) = #{month} and year(regdate) = #{year}
+        GROUP BY ageCus
+        order by ageCus
+    </select>
+
+    <select id="getGenderTotalDate" resultType="org.allinone.statistic.domain.Statistic">
+        select count(mno) customerNum, date(regdate) date from tbl_member
+        where month(regdate) = #{month} and year(regdate) = #{year}
+        Group by date
+        order by date
+    </select>
+
+    <select id="getMaleTotalDate" resultType="org.allinone.statistic.domain.Statistic">
+        select count(mno) customerNum, date(regdate) date from tbl_member
+        where gender = 0 and month(regdate) = #{month} and year(regdate) = #{year}
+        Group by date
+        order by date
+    </select>
+
+    <select id="getFemaleTotalDate" resultType="org.allinone.statistic.domain.Statistic">
+        select count(mno) customerNum, date(regdate) date from tbl_member
+        where gender = 1 and month(regdate) = #{month} and year(regdate) = #{year}
+        Group by date
+        order by date
+    </select>
+
+    <select id="getGenderTotalMonth" resultType="org.allinone.statistic.domain.Statistic">
+        select count(mno) customerNum, month(regdate) month from tbl_member
+        where year(regdate) = #{year}
+        Group by month
+        order by month
+    </select>
+
+    <select id="getMaleTotalMonth" resultType="org.allinone.statistic.domain.Statistic">
+        select count(mno) customerNum, month(regdate) month from tbl_member
+        where gender = 0 and year(regdate) = #{year}
+        Group by month
+        order by month
+    </select>
+
+    <select id="getFemaleTotalMonth" resultType="org.allinone.statistic.domain.Statistic">
+        select count(mno) customerNum, month(regdate) month from tbl_member
+        where gender = 1 and year(regdate) = #{year}
+        Group by month
+        order by month
+    </select>
+
+
+</mapper>

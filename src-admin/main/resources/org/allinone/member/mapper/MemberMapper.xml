@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.allinone.member.mapper.MemberMapper">
+
+    <sql id="search">
+        <trim prefix="where" prefixOverrides="and">
+            <if test="filterArr != null">
+                and status in
+                <foreach collection="filterArr" item="status" open="(" close=")" separator=",">
+                    #{status}
+                </foreach>
+            </if>
+            <if test="type != null">
+                <foreach collection="arr" item="item" separator=" OR " open="and (" close=")">
+                    <if test="item == 'I'.toString()">
+                        mid like concat('%',#{keyword},'%')
+                    </if>
+                    <if test="item == 'N'.toString()">
+                        mname like concat('%',#{keyword},'%')
+                    </if>
+                    <if test="item == 'T'.toString()">
+                        mTel like concat('%', #{keyword}, '%')
+                    </if>
+                </foreach>
+            </if>
+        </trim>
+    </sql>
+
+    <insert id="insert">
+        insert into tbl_member(mid, mpw, mname, gender, birth, region, address, mTel, email)
+        values(#{mid}, #{mpw}, #{mname}, #{gender}, #{birth}, #{region}, #{address}, #{mTel}, #{email})
+        <selectKey order="AFTER" resultType="long" keyProperty="mno">
+            select last_insert_id()
+        </selectKey>
+    </insert>
+
+    <insert id="insertRole">
+        insert into tbl_member_role values (#{mid},'ROLE_MEMBER')
+    </insert>
+
+    <select id="getList" resultType="org.allinone.member.domain.Member">
+        select * from tbl_member
+        <include refid="search"></include>
+        order by mno desc limit #{skip}, #{size}
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(mno) from tbl_member
+        <include refid="search"></include>
+    </select>
+
+    <select id="select" resultType="org.allinone.member.domain.Member">
+        select * from tbl_member where mno = #{mno}
+    </select>
+
+
+    <update id="update">
+
+        update tbl_member set
+        <trim suffixOverrides=",">
+            <if test="mpw != null">mpw = #{mpw},</if>
+            <if test="mname != null">mname = #{mname},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="mTel != null">mTel = #{mTel},</if>
+            <if test="email != null">email = #{email},</if>
+        </trim>
+        where mno = #{mno}
+
+    </update>
+
+
+    <update id="status">
+        update tbl_member set status = #{status} where mno = #{mno}
+    </update>
+
+</mapper>
