@@ -2,7 +2,7 @@
 1인 가구를 위한 포털 서비스 allinone 
 
 
-[Spring framework 기반의 점주 회원과 관리자를 위한 어드민 서비스](https://github.com/allinone2021/allinone-project/tree/main/src-admin)
+[Spring framework 기반의 점주 회원과 관리자를 위한 어드민 서비스](https://github.com/allinone2021/allinone-project/tree/main/src-admin/main)
 
 <br>
 
