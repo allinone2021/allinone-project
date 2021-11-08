@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<h1>get page</h1>
+<h1 id="result"></h1>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+
+  async function getList() {
+    console.log("----- getList -----")
+
+    const response = await axios.get(`/elastic/search`)
+    console.log("response",response)
+
+    const result = await response.data;
+    console.log("result",result)
+    console.log("source",result.hits.hits)
+
+    const print = document.getElementById("result")
+
+    let str = ""
+
+    for(const list of result.hits.hits){
+      console.log(list.sourceAsMap.mname)
+      str += list.sourceAsMap.mname
+    }
+    print.innerHTML = str
+
+    console.log("----- /getList -----")
+  }
+
+  getList()
+
+  async function getOne() {
+    console.log("----- getList -----")
+
+    const response = await axios.get(`/elastic/get`)
+    console.log("response",response)
+
+    const result = await response.data;
+    console.log("result",result)
+    console.log("source",result.source)
+
+    const print = document.getElementById("result")
+    print.innerHTML = `${result.source.mname}`
+
+    console.log("----- /getList -----")
+  }
+
+  // getOne()
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns="http://www.w3.org/1999/html"
+      layout:decorator="layout/layout1">
+<head>
+    <meta charset="UTF-8">
+    <title>allinone</title>
+</head>
+<body>
+
+
+<div layout:fragment="content">
+
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-area set-bg" data-setbg="/img/skyscraper2.jpg">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>allinone</h2>
+                        <div class="breadcrumb__option">
+                            <a th:href="@{#}"><i class="fa fa-home"></i> Home</a>
+                            <span>생활정보</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+    <!-- Blog Section Begin -->
+    <section class="blog-section spad">
+
+        <div class="container">
+            <div class="row" >
+
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6" th:each="board:${res.dtoList}">
+                            <div class="blog__item">
+                                <!-- 아래에 이미지 링크 -->
+                                <div class="blog__item__pic set-bg"><img th:src="@{${board.img}}" style="height: 200px; background-repeat: no-repeat; background-position: center center;"></div>
+                                <div class="blog__item__text">
+                                    <ul class="blog__item__tags">
+                                        <li th:each="tag:${board.tags}"><i class="fa fa-tags"></i> [[${tag}]]</li>
+                                    </ul>
+                                    <h5><a th:href="|javascript:movePage(${res.page}, ${board.bno})|">  [[${board.title}]]  </a></h5>
+                                    <ul class="blog__item__widget">
+                                        <li><i class="fa fa-clock-o"></i>  [[${#temporals.format(board.regDate, 'yyyy/MM/dd')}]]  </li>
+                                        <li><i class="fa fa-user"></i>  [[${board.writer}]]  </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="blog__pagination">
+                        <a th:href="@{#}"><i class="fa fa-long-arrow-left"></i> prev </a>
+                        <a th:href="@{#}">1</a>
+                        <a th:href="@{#}">2</a>
+                        <a th:href="@{#}">3</a>
+                        <a th:href="@{#}"> next <i class="fa fa-long-arrow-right"></i></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<th:block  layout:fragment="script">
+
+    <script th:inline="javascript">
+
+        const result = [[${result}]]
+
+        const pageRequest = [[${pageRequestDTO}]]
+
+        function movePage(page, bno) {
+
+            console.log(pageRequest)
+
+            let uri ="";
+
+            if(bno) {
+                uri = `/board/read?bno=${bno}&page=${page}`
+            }else {
+                uri = `/board/list?page=${page}`
+            }
+            self.location = uri
+        }
+
+    </script>
+
+</th:block>
+
+
+</body>
+</html>

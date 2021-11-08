@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Directing Template">
+  <meta name="keywords" content="Directing, unica, creative, html">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>allinone</title>
+
+  <!-- Favicon-->
+  <link rel="icon" type="image/x-icon" th:href="@{/img/allinoneprofile.png}" />
+
+  <!-- Google Font -->
+  <link th:href="@{https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap}" rel="stylesheet">
+
+  <!-- Css Styles -->
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
+  <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}" type="text/css">
+  <link rel="stylesheet" th:href="@{/css/elegant-icons.css}" type="text/css">
+  <link rel="stylesheet" th:href="@{/css/flaticon.css}" type="text/css">
+  <link rel="stylesheet" th:href="@{/css/nice-select.css}" type="text/css">
+  <link rel="stylesheet" th:href="@{/css/barfiller.css}" type="text/css">
+  <link rel="stylesheet" th:href="@{/css/magnific-popup.css}" type="text/css">
+  <link rel="stylesheet" th:href="@{/css/jquery-ui.min.css}" type="text/css">
+  <link rel="stylesheet" th:href="@{/css/owl.carousel.min.css}" type="text/css">
+  <link rel="stylesheet" th:href="@{/css/slicknav.min.css}" type="text/css">
+  <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
+</head>
+
+<body>
+
+
+<!-- Header Section Begin -->
+<header class="header">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-3 col-md-3">
+        <div class="header__logo">
+          <a th:href="@{/index.html}"><img th:src="@{/img/aiologo_main.svg}" alt=""></a>
+        </div>
+      </div>
+      <div class="col-lg-9 col-md-9">
+        <div class="header__nav">
+          <nav class="header__menu mobile-menu">
+            <ul>
+              <li><a th:href="@{/index.html}">Home</a></li>
+              <li><a th:href="@{#}">내 주변 가게</a>
+                <ul class="dropdown">
+                  <li><a th:href="@{#}">혼밥가게</a></li>
+                  <li><a th:href="@{#}">반찬가게</a></li>
+                  <li><a th:href="@{#}">밀키트</a></li>
+                </ul>
+              </li>
+              <li><a th:href="@{#}">정부정책</a></li>
+              <li><a th:href="@{#}">생활정보</a></li>
+              <li><a th:href="@{#}">정보나눔게시판</a></li>
+              <li><a th:href="@{#}">고객센터</a>
+                <ul class="dropdown">
+                  <li><a th:href="@{#}">FAQ</a></li>
+                  <li><a th:href="@{#}">Q&A</a></li>
+                  <li><a th:href="@{#}">공지사항</a></li>
+                </ul>
+              </li>
+            </ul>
+          </nav>
+          <div class="header__menu__right">
+            <a th:href="@{#}" class="login-btn"><i class="fa fa-user"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu-wrap"></div>
+  </div>
+</header>
+<!-- Header Section End -->
+
+<div layout:fragment="content">
+
+  <!-- 레이아웃 추가 부분 -->
+
+</div>
+
+
+<!-- Footer Section Begin -->
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3 col-md-6">
+        <div class="footer__about">
+          <div class="footer__about__logo">
+            <img th:src="@{/img/aiologo_main.svg}" alt="">
+            <p>혼자 사는 당신을 위한 모든 정보를 <b>allinone</b> 에서 찾아보세요</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 offset-lg-1 col-md-6">
+        <div class="footer__address">
+          <ul>
+            <li>
+              <span>Email:</span>
+              <p> T.allinone2021@gmail.com </p>
+            </li>
+            <li>
+              <span>Connect Us:</span>
+              <div class="footer__social">
+                <a href="${#}"><i class="fa fa-facebook"></i></a>
+                <a href="${#}"><i class="fa fa-instagram"></i></a>
+                <a href="${#}"><i class="fa fa-twitter"></i></a>
+                <a href="${#}"><i class="fa fa-skype"></i></a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-3 offset-lg-1 col-md-6">
+        <div class="footer__widget">
+          <ul>
+            <li><a href="${#}">Home</a></li>
+            <li><a href="${#}">FAQ</a></li>
+            <li><a href="${#}">Q&A</a></li>
+            <li><a href="${#}">공지사항</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="footer__copyright">
+          <div class="footer__copyright__text"><p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This web application is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">team allinone</a>
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+          </div>
+          <div class="footer__copyright__links">
+            <a href="${#}">Terms</a>
+            <a href="${#}">Privacy Policy</a>
+            <a href="${#}">Cookie Policy</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- Footer Section End -->
+
+<!-- Js Plugins -->
+<script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/jquery.nice-select.min.js}"></script>
+<script th:src="@{/js/jquery-ui.min.js}"></script>
+<script th:src="@{/js/jquery.nicescroll.min.js}"></script>
+<script th:src="@{/js/jquery.barfiller.js}"></script>
+<script th:src="@{/js/jquery.magnific-popup.min.js}"></script>
+<script th:src="@{/js/jquery.slicknav.js}"></script>
+<script th:src="@{/js/owl.carousel.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+
+<th:block  layout:fragment="script">
+
+</th:block>
+
+</body>
+
+</html>
