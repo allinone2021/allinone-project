@@ -14,10 +14,10 @@
 
 #### 🔗 [개요](#개요)
 #### 🔗 [대표기능 시연영상](#시연영상)
-
+#### 🔗 [발표자료](#발표)
   
 
-  <br>
+<br>
   
 <div align=center>  
   <img src="https://user-images.githubusercontent.com/90686738/139640084-c7112469-1333-42cc-8060-a1c502354292.jpg" alt="1" height="1000"/>
@@ -63,3 +63,12 @@
 
 추가예정
 
+<br>
+
+---
+
+<br>
+
+<h2 id="발표"> 📑 발표자료 </h2>
+
+[발표자료 LINK](https://drive.google.com/file/d/1qNg-Wuz2qYotwT9Ez7ocaMwg58ODGnIt/view?usp=sharing)
