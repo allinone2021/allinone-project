@@ -1,4 +1,4 @@
-# Spring Boot / JPA 기반의 1인 가구에게 필요한 모든 정보를 한 곳에 모아둔 플랫폼 서비스
+# Spring Boot / JPA 기반의 1인 가구대상 정보 플랫폼 서비스
 
 <img src="https://user-images.githubusercontent.com/90686738/139640104-f24606fa-0ae5-494f-b8ab-98ca190b2290.jpg" alt="3" style="zoom:50%;" ></img>
 
